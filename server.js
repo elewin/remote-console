@@ -100,7 +100,6 @@ function sendSSE(req, res) {
   const id = new Date().getTime();
 
   events.on("sendSSE", (message) => {
-    console.log("message", message);
     constructSSE(res, id, message);
   });
 }
