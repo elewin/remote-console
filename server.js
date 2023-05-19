@@ -44,13 +44,23 @@ const events = new EventEmitter();
 events.setMaxListeners(MAX_EVENT_LISTENERS);
 
 async function postLog(req, res) {
-  let statusCode;
-
-  statusCode = 201;
-  res.writeHead(201, { "Content-Type": "application/json" });
-  console.log(`${req.method} ${req.url} ${statusCode}`);
-  events.emit("sendSSE", "hi?");
-  res.end();
+  let body = "";
+  try {
+    req.on("data", (chunk) => {
+      body += chunk;
+    });
+    req.on("end", () => {
+      const jsonData = JSON.stringify(JSON.parse(body));
+      res.writeHead(201, { "Content-Type": "application/json" });
+      res.end();
+      events.emit("sendSSE", jsonData);
+    });
+  } catch (e) {
+    console.log("Error:", e);
+    res.writeHead(500, { "Content-Type": "application/json" });
+    res.write(e.toString());
+    res.end();
+  }
 }
 
 async function getFile(req, res) {
@@ -61,7 +71,6 @@ async function getFile(req, res) {
   file.stream.pipe(res);
   logActivity(req.method, req.url, statusCode);
 }
-
 
 // https://developer.mozilla.org/en-US/docs/Learn/Server-side/Node_server_without_framework
 async function prepareFile(url) {
@@ -81,7 +90,6 @@ function logActivity(method, url, statusCode) {
   console.log(`${method} ${url} ${statusCode}`);
 }
 
-
 function sendSSE(req, res) {
   res.writeHead(200, {
     "Content-Type": "text/event-stream",
@@ -91,10 +99,10 @@ function sendSSE(req, res) {
 
   const id = new Date().getTime();
 
-  events.on("sendSSE", (message)=>{
-    console.log('message', message);
-    constructSSE(res, id, "test");
-  })
+  events.on("sendSSE", (message) => {
+    console.log("message", message);
+    constructSSE(res, id, message);
+  });
 }
 
 function constructSSE(res, id, data) {
