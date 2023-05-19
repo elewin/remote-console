@@ -5,8 +5,8 @@ eventSource.addEventListener(
   function (e) {
     try {
       var jsonData = JSON.parse(e.data);
-      var method = jsonData.method;
-      var message = jsonData.message;
+      var method = jsonData.method; // string
+      var message = jsonData.message; //any[]
       if (
         method === "log" ||
         method === "warn" ||
@@ -14,9 +14,9 @@ eventSource.addEventListener(
         method === "info"
       ) {
         var fn = console[method];
-        fn(message);
+        fn(...message);
       } else {
-        console.log(message);
+        console.log(...message);
       }
     } catch (e) {
       console.error(e);
