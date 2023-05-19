@@ -26,18 +26,10 @@ eventSource.addEventListener(
 );
 
 eventSource.addEventListener(
-  "open",
-  function (e) {
-    console.log("connection opened");
-  },
-  false
-);
-
-eventSource.addEventListener(
   "error",
   function (e) {
     if (e.readyState == EventSource.CLOSED) {
-      console.log("connection closed");
+      console.log("Connection closed");
     }
   },
   false
