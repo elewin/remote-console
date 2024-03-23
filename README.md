@@ -4,6 +4,19 @@ Sends messages to a remote browser console with server sent events.
 
 Uses dependency-free vanilla node.js
 
+## Usage
+
+Make a POST to `/api/log` with a body such as:
+
+```json
+{
+    "method": "log",
+    "message": ["hello"]
+}
+```
+
+The message will appear in the browser's console
+
 ## License
 
 The MIT License (MIT)
